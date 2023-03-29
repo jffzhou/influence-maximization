@@ -27,3 +27,12 @@ plt.show()
 h, a = nx.hits(G)
 h = dict(sorted(h.items(), key=lambda item: -item[1]))
 a = dict(sorted(a.items(), key=lambda item: -item[1]))
+
+n = 5
+print(f"{n} highest Hub scores:")
+for u in list(h.keys())[:n]:
+    print(f"{u}: {h[u]}")
+
+print(f"\n{n} highest Hub scores:")
+for u in list(a.keys())[:n]:
+    print(f"{u}: {a[u]}")
