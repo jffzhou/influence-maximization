@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+*.gz
+/twitter
+/reddit_reply_networks
