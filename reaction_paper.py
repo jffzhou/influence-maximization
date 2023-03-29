@@ -1,8 +1,12 @@
+# %%
 import itertools
 import networkx as nx
 import scipy
 import matplotlib.pyplot as plt
 import math
+
+
+# %%
 G = nx.Graph()
 file = open('twitter_combined.txt', mode='r', encoding='utf-8-sig')
 lines = file.readlines()
@@ -16,3 +20,11 @@ for line in lines:
     edge_list.append((node1, node2))
 G = nx.from_edgelist(edge_list)
 h, a = nx.hits(G)
+
+# %%
+h = dict(sorted(h.items(), key=lambda item: -item[1]))
+a = dict(sorted(a.items(), key=lambda item: -item[1]))
+
+# %%
+nx.draw(G)
+plt.show()
