@@ -56,7 +56,7 @@ plt.show()
 
 # %%
 undir_G = G.to_undirected()
-beta = 0.01
+beta = 0.5
 
 # distance dictionary
 dpath = {x[0]: x[1] for x in nx.all_pairs_shortest_path_length(undir_G)}
@@ -118,36 +118,42 @@ def CI_TLS(G, n):
     activated.add(n)
     # do calculation
     sigmas = {n: 0}
+    visited = {1}
     queue = []
 
     for neighbor in G.neighbors(n):
-        sigmas[neighbor] = beta
         activated.add(neighbor)
-        queue.append((neighbor, 2))
+        queue.append((neighbor, 1))
+        visited.add(neighbor)
 
     while queue:
-        u, d = queue.pop(0)
-        for v in G.neighbors(u):
-            if v not in sigmas and d < 4:
-                print(v)
-                previous = sigmas.keys() & G.neighbors(v)
-                for u in previous:
-                    print(f"({u}, {v})")
-                    print(sigmas[u])
-                    print(set(G.neighbors(u)))
-                    print(activated)
-                    print(activation(u, v, d, set(G.neighbors(u))))
-                prod = [
-                    1 - sigmas[u]*activation(u, v, d, set(G.neighbors(neighbor))) for u in previous]
-                print(prod)
-                sigmas[v] = 1 - np.prod(prod)
-                activated.add(v)
-                queue.append((v, d + 1))
+        v, d = queue.pop(0)
+       
+        print(v)
+        print(activated)
+        print(sigmas)
+        print(visited)
+        if d == 1 :
+          sigmas[v] = beta
+        else:
+          previous = activated & set(G.neighbors(v))
+          sigmas[v] = 1 - np.prod([1 - sigmas[u]*activation(u, v, d+1, set(G.neighbors(u))) for u in previous])
+        print(sigmas)
+        activated.add(v)
+        for nxt in G.neighbors(v):
+            if nxt not in visited and d < 3:
+                # print(f"v: {v}")
+                # print(f"activated: {activated}")
+                # previous = activated & set(G.neighbors(v))
+                # sigmas[v] = 1 - np.prod([1 - sigmas[u]*activation(u, v, d+1, set(G.neighbors(u))) for u in previous])
+                visited.add(nxt)
+                queue.append((nxt, d + 1))
+        print(queue)
 
     for u in sigmas:
         activated.remove(u)
     print(sigmas)
-    return sum(sigmas.values())
+    return np.sum(list(sigmas.values()))
 
 
 def CI_TLS_IM(G, k):
@@ -155,7 +161,11 @@ def CI_TLS_IM(G, k):
     CI_TLS_scores = {n: CI_TLS(G, n) for n in G.nodes()}
 
 
-CI_TLS(test_G, 1)
+# for i in range(1, 10):
+#   print(f"{i}: {CI_TLS(test_G, i)}")
+print(CI_TLS(test_G, 1))
+# print(CI_TLS(test_G, 8))
+
 # %% Construct test graph
 
 test_G = nx.Graph()
