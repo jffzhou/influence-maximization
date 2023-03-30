@@ -9,6 +9,7 @@ import math
 import numpy as np
 import collections
 from copy import deepcopy
+import pylab
 
 # %%
 activated = set()
@@ -130,7 +131,7 @@ for u in month_nets[MONTH]:
         if u != v:
             G.add_edge(u, v)
 
-USE_DIRECTED = False
+USE_DIRECTED = True
 degs = {}
 if USE_DIRECTED:
     degs = {n: G.indegree(n) for n in G.nodes()}
@@ -145,8 +146,10 @@ k = 20
 seed = ci_tls_im(G, k)
 print(seed)
 
+# %%
 color = ["red" if n in seed else "grey" for n in G.nodes()]
 nx.draw(G, node_size=10, node_color=color)
+nx.draw(G, node_size=30, nodelist=seed)
 plt.show()
 
 # %% HITS algorithm
