@@ -134,7 +134,7 @@ for u in month_nets[MONTH]:
 USE_DIRECTED = True
 degs = {}
 if USE_DIRECTED:
-    degs = {n: G.indegree(n) for n in G.nodes()}
+    degs = {n: G.in_degree(n) for n in G.nodes()}
 else:
     G = G.to_undirected(reciprocal=False)
     degs = {n: G.degree(n) for n in G.nodes()}
@@ -148,8 +148,9 @@ print(seed)
 
 # %%
 color = ["red" if n in seed else "grey" for n in G.nodes()]
-nx.draw(G, node_size=10, node_color=color)
-nx.draw(G, node_size=30, nodelist=seed)
+pos = nx.spring_layout(G)
+nx.draw(G, node_size=10, node_color=color, pos=pos)
+nx.draw(G, node_size=40, nodelist=seed, node_color="red", pos=pos)
 plt.show()
 
 # %% HITS algorithm
@@ -173,3 +174,10 @@ for n in seed:
     print(f"\thub score: {h[n]}")
     print(f"{n} auth ranking: {list(a.keys()).index(n)}")
     print(f"\tauth score: {a[n]}")
+
+# %% draw HITS
+color = ["red" if n in top_auth else "grey" for n in G.nodes()]
+pos = nx.spring_layout(G)
+nx.draw(G, node_size=10, node_color=color, pos=pos)
+nx.draw(G, node_size=40, nodelist=top_auth, node_color="red", pos=pos)
+plt.show()
