@@ -2,7 +2,6 @@
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-import pandas as pd
 from matplotlib.lines import Line2D
 import scipy
 
