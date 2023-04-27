@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 *.gz
-/twitter
-/reddit_reply_networks
+*/twitter
+*/reddit_reply_networks
