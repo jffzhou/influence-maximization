@@ -12,16 +12,22 @@ from collections import Counter
 
 # %% 
 # adapted from hautahi to work with networkx and have different probabilities per node
-def get_RRS(G):   
+def get_RRS(G, p_func):   
     """
-    Inputs: G:  Networkx Graph
-    Return: A random reverse reachable set expressed as a list of nodes
+    Args: 
+      G:  Networkx Graph with activation probabilities associated with each edge
+      p_func: A function that takes in the network and source node, and returns 
+        the network with activation probabilities associated with each edge.
+        (can also modify the original graph edges if desired)  
+    Returns: 
+      A random reverse reachable set expressed as a list of nodes.
     """
-    #convert to pandas dataframe
-    df = nx.to_pandas_edgelist(G)
 
     # Step 1. Select random source node
-    source = random.choice(np.unique(df['source']))
+    source = random.choice(list(G.edges()))[0]
+
+    #get activation probabilities
+    df = nx.to_pandas_edgelist(p_func()(G, source))
     
     # Step 2. Sample edges  
     df = df.loc[np.random.uniform(0,1,df.shape[0]) < df['p']]
@@ -49,17 +55,22 @@ def get_RRS(G):
 
 #%%
 # adapted from hautahi to work with networkx and have different probabilities per node
-def ris(G,k,mc=1000):    
+def ris(G,k,p_func,mc=1000):    
     """
-    Inputs: G:  Networkx graph
-            k:  Size of seed set
-            mc: Number of RRSs to generate
-    Return: A seed set of nodes as an approximate solution to the IM problem
+    Args: 
+      G:  Networkx graph
+      k:  Size of seed set
+      p_func: A function that takes in the network and source node, and returns 
+        the network with activation probabilities associated with each edge.
+        (can also modify the original graph edges if desired)
+      mc: Number of RRSs to generate
+    Returns: 
+      A seed set of nodes as an approximate solution to the IM problem
     """
     
     # Step 1. Generate the collection of random RRSs
     start_time = time.time()
-    R = [get_RRS(G) for _ in range(mc)]
+    R = [get_RRS(G, p_func) for _ in range(mc)]
 
     # Step 2. Choose nodes that appear most often (maximum coverage greedy algorithm)
     SEED, timelapse = [], []
@@ -78,6 +89,34 @@ def ris(G,k,mc=1000):
     
     return(sorted(SEED),timelapse)
 
+#%% some example p_funcs:
+
+def IC_uniform(p):
+    def func(G):
+        for e in list(G.edges):
+          G.edges[e]["p"] = p
+        return G
+    return lambda G, s: func(G)
+
+def IC_random(rand_func=None):
+    def func(G, s):
+        for e in list(G.edges):
+          G.edges[e]["p"] = np.random.rand() if rand_func is None else rand_func()
+        return G
+    return lambda G, s: func(G, s)
+
+"""
+def TSSCM(beta):
+    def func(G, s):
+      ## todo
+
+      for e in list(G.edges):
+        p = 1 - (1 - beta) ** ()
+        G.edges[e]["p"] = p / d
+      return G
+    return lambda G, s: func(G, s)
+"""
+
 #%%
 # create an example directed network
 G = nx.random_k_out_graph(15, 2, 1, False, 0)
@@ -85,16 +124,15 @@ G = nx.random_k_out_graph(15, 2, 1, False, 0)
 # no multigraphs
 G = nx.DiGraph(G)
 
-#add probabilities to each edge 
-np.random.seed(0)
-for e in list(G.edges):
-    G.edges[e]["p"] = round(np.random.rand() * 100)/100
+seeds, times = ris(G, 3, IC_random, 1000)
+print(seeds)
+print(times)
 
 #draw
 pos = nx.spring_layout(G, seed=0, scale=100)
 nx.draw(G, pos, with_labels=True)
 nx.draw_networkx_edge_labels(
     G, pos, font_size=7,
-    edge_labels={(u, v): G[u][v]['p'] for (u, v) in G.edges()}
+    edge_labels={(u, v): round(G[u][v]['p']*1000)/1000 for (u, v) in G.edges()}
 )
 plt.show()
