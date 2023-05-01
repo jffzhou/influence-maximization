@@ -145,20 +145,3 @@ def TSSCM(beta):
         return G
 
     return lambda G, s: func(G, s)
-
-
-# %%
-# create an example directed network
-G = nx.random_k_out_graph(15, 2, 1, False, 0)
-
-# no multigraphs
-G = nx.DiGraph(G)
-
-seeds, times = ris(G, 3, TSSCM(0.5), 1000)
-print(seeds)
-print(times)
-
-# draw
-pos = nx.spring_layout(G, seed=0, scale=100)
-nx.draw(G, pos, with_labels=True)
-plt.show()
