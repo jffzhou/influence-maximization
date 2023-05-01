@@ -131,3 +131,5 @@ dmypy.json
 *.gz
 */twitter
 */reddit_reply_networks
+
+.vscode/
