@@ -132,4 +132,9 @@ dmypy.json
 */twitter
 */reddit_reply_networks
 
+<<<<<<< Updated upstream
 .vscode/
+=======
+final-project/scraping/praw.ini
+final-project/scraping/*.csv
+>>>>>>> Stashed changes
