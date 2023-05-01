@@ -161,10 +161,4 @@ print(times)
 # draw
 pos = nx.spring_layout(G, seed=0, scale=100)
 nx.draw(G, pos, with_labels=True)
-nx.draw_networkx_edge_labels(
-    G,
-    pos,
-    font_size=7,
-    edge_labels={(u, v): round(G[u][v]["p"] * 1000) / 1000 for (u, v) in G.edges()},
-)
 plt.show()
