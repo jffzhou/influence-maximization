@@ -45,12 +45,18 @@ plt.title("Seed set from CI_TLS with removal")
 plt.show()
 
 # %%
-ci_tls_removal_seeds = ci_tls_im(G, 20, 0.5, False)
-print(ci_tls_removal_seeds)
-draw_seeds(G, ci_tls_removal_seeds, 0)
+ci_tls_no_removal_seeds = ci_tls_im(G, 20, 0.5, False)
+print(ci_tls_no_removal_seeds)
+draw_seeds(G, ci_tls_no_removal_seeds, 0)
 plt.title("Seed set from CI_TLS without removal")
 plt.show()
 
 # %%
 ris_seeds = set(ris_seeds)
 print(len(ris_seeds & ci_tls_seeds))
+
+# %%
+print(f"RIS intersection with CI_TLS with removal: {len(ris_seeds & ci_tls_seeds)}")
+print(
+    f"RIS intersection with CI_TLS without removal: {len(ris_seeds & ci_tls_no_removal_seeds)}"
+)
