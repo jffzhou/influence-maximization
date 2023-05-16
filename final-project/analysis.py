@@ -60,3 +60,25 @@ print(f"RIS intersection with CI_TLS with removal: {len(ris_seeds & ci_tls_seeds
 print(
     f"RIS intersection with CI_TLS without removal: {len(ris_seeds & ci_tls_no_removal_seeds)}"
 )
+
+# %%
+ris_cic_seeds, times = ris(G, 20, CIC(lambda x: nx.betweeness_centrality(x), 0.5), 1000)
+print(ris_cic_seeds)
+draw_seeds(G, ris_cic_seeds, 0)
+plt.title("Seed set from RIS using CIC model with betweenness centrality")
+plt.show()
+
+# %% Tiny network for testing
+G = nx.random_k_out_graph(30, 2, 1, False, 0)
+
+# no multigraphs
+G = nx.DiGraph(G)
+
+seeds, times = ris(G, 3, CIC(lambda x: nx.eigenvector_centrality(x), 0.5), 10000)
+print(seeds)
+print(times)
+
+# draw
+pos = nx.spring_layout(G, seed=0, scale=100)
+nx.draw(G, pos, with_labels=True)
+plt.show()
