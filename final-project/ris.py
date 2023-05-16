@@ -145,3 +145,28 @@ def TSSCM(beta):
         return G
 
     return lambda G, s: func(G, s)
+
+
+def CIC(centrality_measure, lmbda):
+    """
+    Args:
+      centrality_measure:  An nx anonymous function to compute centrality measures. Must
+      return a dictionary of nodes with centralities as values.
+      lmbda: Parameter to multiply probabilities by
+    Returns:
+      An anonymous function that takes in a graph and a source node and returns activation
+      probabilities beginning from that source node.
+    """
+
+    def func(G):
+        centralities = centrality_measure(G)
+        for u, v in list(G.edges()):
+            if centralities[u] == 0 and centralities[v] == 0:
+                G.edges[(u, v)]["p"] = 0
+            else:
+                G.edges[(u, v)]["p"] = (
+                    lmbda * centralities[u] / (centralities[u] + centralities[v])
+                )
+        return G
+
+    return lambda G, s: func(G)
